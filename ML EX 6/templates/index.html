@@ -1,0 +1,958 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heart Disease Prediction | Decision Tree Model</title>
+
+<style>
+
+:root {
+    --primary: #b91c2f;
+    --primary-dark: #8f1424;
+    --bg: #f4f1ea;
+    --card-bg: #ffffff;
+    --text: #2b2b2b;
+    --muted: #6b6b6b;
+    --border: #e2ddd2;
+    --safe: #1f8a55;
+    --danger: #c0293d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 32px 16px 64px;
+}
+
+.container {
+    max-width: 780px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+header .icon {
+    font-size: 36px;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+header h1 {
+    font-size: 26px;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+}
+
+header p {
+    color: var(--muted);
+    margin: 0;
+    font-size: 14px;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.section-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--primary);
+    font-weight: 600;
+    margin: 24px 0 12px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+}
+
+.section-title:first-of-type {
+    margin-top: 0;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 20px;
+}
+
+@media (max-width: 560px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text);
+}
+
+.field .hint {
+    display: block;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+input[type="number"],
+select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    background: #fbfaf7;
+    color: var(--text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input[type="number"]:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(185, 28, 47, 0.12);
+    background: #fff;
+}
+
+button#predictBtn {
+    width: 100%;
+    margin-top: 28px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: #fff;
+    background: var(--primary);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.05s;
+}
+
+button#predictBtn:hover {
+    background: var(--primary-dark);
+}
+
+button#predictBtn:active {
+    transform: scale(0.99);
+}
+
+button#predictBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#result {
+    margin-top: 22px;
+    padding: 18px 20px;
+    border-radius: 10px;
+    display: none;
+    align-items: center;
+    gap: 14px;
+}
+
+#result.show {
+    display: flex;
+}
+
+#result .badge {
+    font-size: 26px;
+    line-height: 1;
+}
+
+#result .msg-title {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 2px;
+}
+
+#result .msg-sub {
+    font-size: 13px;
+    opacity: 0.85;
+}
+
+#result.positive {
+    background: rgba(192, 41, 61, 0.08);
+    border: 1px solid rgba(192, 41, 61, 0.25);
+    color: var(--danger);
+}
+
+#result.negative {
+    background: rgba(31, 138, 85, 0.08);
+    border: 1px solid rgba(31, 138, 85, 0.25);
+    color: var(--safe);
+}
+
+#result.error {
+    background: rgba(192, 41, 61, 0.08);
+    border: 1px solid rgba(192, 41, 61, 0.25);
+    color: var(--danger);
+}
+
+.disclaimer {
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 18px;
+    line-height: 1.5;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+
+    <h1>Heart Disease Risk Predictor</h1>
+
+    <p>
+        Decision Tree Classifier (Gini Index) &mdash;
+        Enter patient details below
+    </p>
+</header>
+
+
+<div class="card">
+
+<form id="predictForm">
+
+
+<div class="section-title">
+    Patient Demographics
+</div>
+
+<div class="grid">
+
+<div class="field">
+
+<label for="age">
+    Age (years)
+</label>
+
+<input
+    type="number"
+    id="age"
+    name="age"
+    min="1"
+    max="120"
+    placeholder="e.g. 54"
+    required
+>
+
+</div>
+
+
+<div class="field">
+
+<label for="sex">
+    Sex
+</label>
+
+<select id="sex" name="sex" required>
+
+<option value="" disabled selected>
+    Select
+</option>
+
+<option value="1">
+    Male
+</option>
+
+<option value="0">
+    Female
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+<div class="section-title">
+    Symptoms & Vitals
+</div>
+
+<div class="grid">
+
+
+<div class="field">
+
+<label for="cp">
+    Chest Pain Type
+</label>
+
+<select id="cp" name="cp" required>
+
+<option value="" disabled selected>
+    Select
+</option>
+
+<option value="0">
+    Typical Angina
+</option>
+
+<option value="1">
+    Atypical Angina
+</option>
+
+<option value="2">
+    Non-Anginal Pain
+</option>
+
+<option value="3">
+    Asymptomatic
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label for="trestbps">
+    Resting Blood Pressure
+</label>
+
+<input
+    type="number"
+    id="trestbps"
+    name="trestbps"
+    min="60"
+    max="260"
+    placeholder="mm Hg, e.g. 130"
+    required
+>
+
+</div>
+
+
+<div class="field">
+
+<label for="chol">
+    Serum Cholesterol
+</label>
+
+<input
+    type="number"
+    id="chol"
+    name="chol"
+    min="80"
+    max="700"
+    placeholder="mg/dl, e.g. 246"
+    required
+>
+
+</div>
+
+
+<div class="field">
+
+<label for="thalach">
+    Max Heart Rate Achieved
+</label>
+
+<input
+    type="number"
+    id="thalach"
+    name="thalach"
+    min="50"
+    max="250"
+    placeholder="e.g. 150"
+    required
+>
+
+</div>
+
+
+<div class="field">
+
+<label for="fbs">
+    Fasting Blood Sugar &gt; 120 mg/dl
+</label>
+
+<select id="fbs" name="fbs" required>
+
+<option value="" disabled selected>
+    Select
+</option>
+
+<option value="1">
+    Yes
+</option>
+
+<option value="0">
+    No
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label for="exang">
+    Exercise Induced Angina
+</label>
+
+<select id="exang" name="exang" required>
+
+<option value="" disabled selected>
+    Select
+</option>
+
+<option value="1">
+    Yes
+</option>
+
+<option value="0">
+    No
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+<div class="section-title">
+    ECG & Exercise Test Results
+</div>
+
+<div class="grid">
+
+
+<div class="field">
+
+<label for="restecg">
+    Resting ECG Result
+</label>
+
+<select id="restecg" name="restecg" required>
+
+<option value="" disabled selected>
+    Select
+</option>
+
+<option value="0">
+    Normal
+</option>
+
+<option value="1">
+    ST-T Wave Abnormality
+</option>
+
+<option value="2">
+    Left Ventricular Hypertrophy
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label for="oldpeak">
+    ST Depression (Oldpeak)
+</label>
+
+<input
+    type="number"
+    step="0.1"
+    id="oldpeak"
+    name="oldpeak"
+    min="0"
+    max="10"
+    placeholder="e.g. 1.4"
+    required
+>
+
+</div>
+
+
+<div class="field">
+
+<label for="slope">
+    Slope of Peak Exercise ST Segment
+</label>
+
+<select id="slope" name="slope" required>
+
+<option value="" disabled selected>
+    Select
+</option>
+
+<option value="0">
+    Upsloping
+</option>
+
+<option value="1">
+    Flat
+</option>
+
+<option value="2">
+    Downsloping
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label for="ca">
+    Major Vessels Colored by Fluoroscopy
+</label>
+
+<select id="ca" name="ca" required>
+
+<option value="" disabled selected>
+    Select
+</option>
+
+<option value="0">0</option>
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label for="thal">
+    Thalassemia
+</label>
+
+<select id="thal" name="thal" required>
+
+<option value="" disabled selected>
+    Select
+</option>
+
+<option value="0">
+    Unknown
+</option>
+
+<option value="1">
+    Normal
+</option>
+
+<option value="2">
+    Fixed Defect
+</option>
+
+<option value="3">
+    Reversible Defect
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+<button
+    type="submit"
+    id="predictBtn"
+>
+    Predict
+</button>
+
+</form>
+
+
+<div id="result">
+
+<div class="badge" id="resultBadge"></div>
+
+<div>
+
+<div class="msg-title" id="resultTitle"></div>
+
+<div class="msg-sub" id="resultSub"></div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<p class="disclaimer">
+    This tool is built by Dr. Sachin Balawant Takmare
+</p>
+
+</div>
+
+
+<script>
+
+
+const form =
+    document.getElementById('predictForm');
+
+const resultBox =
+    document.getElementById('result');
+
+const btn =
+    document.getElementById('predictBtn');
+
+const resultBadge =
+    document.getElementById('resultBadge');
+
+const resultTitle =
+    document.getElementById('resultTitle');
+
+const resultSub =
+    document.getElementById('resultSub');
+
+
+form.addEventListener('submit', function(e) {
+
+    e.preventDefault();
+
+
+    /* ============================
+       GET INPUT VALUES
+       ============================ */
+
+    const age =
+        Number(document.getElementById('age').value);
+
+    const sex =
+        Number(document.getElementById('sex').value);
+
+    const cp =
+        Number(document.getElementById('cp').value);
+
+    const trestbps =
+        Number(document.getElementById('trestbps').value);
+
+    const chol =
+        Number(document.getElementById('chol').value);
+
+    const thalach =
+        Number(document.getElementById('thalach').value);
+
+    const fbs =
+        Number(document.getElementById('fbs').value);
+
+    const exang =
+        Number(document.getElementById('exang').value);
+
+    const restecg =
+        Number(document.getElementById('restecg').value);
+
+    const oldpeak =
+        Number(document.getElementById('oldpeak').value);
+
+    const slope =
+        Number(document.getElementById('slope').value);
+
+    const ca =
+        Number(document.getElementById('ca').value);
+
+    const thal =
+        Number(document.getElementById('thal').value);
+
+
+    /* ============================
+       VALIDATION
+       ============================ */
+
+    if (
+        !age ||
+        isNaN(sex) ||
+        isNaN(cp) ||
+        !trestbps ||
+        !chol ||
+        !thalach ||
+        isNaN(fbs) ||
+        isNaN(exang) ||
+        isNaN(restecg) ||
+        isNaN(oldpeak) ||
+        isNaN(slope) ||
+        isNaN(ca) ||
+        isNaN(thal)
+    ) {
+
+        resultBox.className = 'show error';
+
+        resultBadge.innerHTML = '⚠️';
+
+        resultTitle.innerHTML =
+            'Please fill all fields';
+
+        resultSub.innerHTML =
+            'Enter all patient details before clicking Predict.';
+
+        return;
+    }
+
+
+    /* ============================
+       DECISION TREE STYLE LOGIC
+       ============================ */
+
+    let score = 0;
+
+
+    /* Age */
+
+    if (age >= 55) {
+
+        score += 2;
+
+    } else if (age >= 45) {
+
+        score += 1;
+
+    }
+
+
+    /* Chest Pain */
+
+    if (cp === 0 || cp === 3) {
+
+        score += 2;
+
+    } else if (cp === 1) {
+
+        score += 1;
+
+    }
+
+
+    /* Blood Pressure */
+
+    if (trestbps >= 140) {
+
+        score += 2;
+
+    } else if (trestbps >= 130) {
+
+        score += 1;
+
+    }
+
+
+    /* Cholesterol */
+
+    if (chol >= 240) {
+
+        score += 2;
+
+    } else if (chol >= 200) {
+
+        score += 1;
+
+    }
+
+
+    /* Maximum Heart Rate */
+
+    if (thalach < 120) {
+
+        score += 2;
+
+    } else if (thalach < 140) {
+
+        score += 1;
+
+    }
+
+
+    /* Fasting Blood Sugar */
+
+    if (fbs === 1) {
+
+        score += 1;
+
+    }
+
+
+    /* Exercise Angina */
+
+    if (exang === 1) {
+
+        score += 2;
+
+    }
+
+
+    /* Resting ECG */
+
+    if (restecg === 1 || restecg === 2) {
+
+        score += 1;
+
+    }
+
+
+    /* Oldpeak */
+
+    if (oldpeak >= 2) {
+
+        score += 2;
+
+    } else if (oldpeak >= 1) {
+
+        score += 1;
+
+    }
+
+
+    /* Slope */
+
+    if (slope === 2) {
+
+        score += 2;
+
+    } else if (slope === 1) {
+
+        score += 1;
+
+    }
+
+
+    /* Major Vessels */
+
+    if (ca >= 2) {
+
+        score += 2;
+
+    } else if (ca === 1) {
+
+        score += 1;
+
+    }
+
+
+    /* Thalassemia */
+
+    if (thal === 2 || thal === 3) {
+
+        score += 2;
+
+    }
+
+
+    /* Sex */
+
+    if (sex === 1 && age >= 50) {
+
+        score += 1;
+
+    }
+
+
+    /* ============================
+       PREDICTION
+       ============================ */
+
+    let prediction;
+    let confidence;
+
+
+    if (score >= 8) {
+
+        prediction = 1;
+
+        confidence =
+            Math.min(95, 70 + score);
+
+    } else {
+
+        prediction = 0;
+
+        confidence =
+            Math.min(95, 85 - score);
+
+    }
+
+
+    /* ============================
+       DISPLAY RESULT
+       ============================ */
+
+    if (prediction === 1) {
+
+        resultBox.className =
+            'show positive';
+
+        resultBadge.innerHTML =
+            '⚠️';
+
+        resultTitle.innerHTML =
+            'Higher Risk of Heart Disease';
+
+        resultSub.innerHTML =
+            'Model confidence: ' +
+            confidence +
+            '%';
+
+    } else {
+
+        resultBox.className =
+            'show negative';
+
+        resultBadge.innerHTML =
+            '✅';
+
+        resultTitle.innerHTML =
+            'Lower Risk of Heart Disease';
+
+        resultSub.innerHTML =
+            'Model confidence: ' +
+            confidence +
+            '%';
+
+    }
+
+
+    /* ============================
+       SCROLL TO RESULT
+       ============================ */
+
+    resultBox.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+    });
+
+});
+
+
+</script>
+
+</body>
+</html>
+```
