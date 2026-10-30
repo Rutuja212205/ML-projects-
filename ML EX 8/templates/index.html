@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Message Classifier</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #e8f1f8;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 600px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            text-align: center;
+            color: #24527a;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            height: 130px;
+            padding: 12px;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            font-size: 15px;
+            resize: none;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #24527a;
+        }
+
+        .buttons {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 11px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .classify {
+            background-color: #24527a;
+            color: white;
+            flex: 1;
+        }
+
+        .clear {
+            background-color: #d9e6f2;
+            color: #24527a;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #f3f8fc;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .result h2 {
+            color: #24527a;
+            margin-bottom: 12px;
+        }
+
+        .result p {
+            margin: 8px 0;
+            color: #444;
+        }
+
+        .prediction {
+            font-size: 20px;
+            font-weight: bold;
+            color: #24527a;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Student Message Classifier</h1>
+
+        <p class="subtitle">
+            Naive Bayes Classification
+        </p>
+
+        <label for="message">Enter Message</label>
+
+        <textarea
+            id="message"
+            placeholder="Enter your college message here">
+        </textarea>
+
+        <div class="buttons">
+
+            <button class="classify" onclick="classifyMessage()">
+                Classify
+            </button>
+
+            <button class="clear" onclick="clearMessage()">
+                Clear
+            </button>
+
+        </div>
+
+        <div class="result" id="result">
+
+            <h2>Result</h2>
+
+            <p>
+                Prediction:
+                <span class="prediction" id="prediction"></span>
+            </p>
+
+            <p id="resultMessage"></p>
+
+            <p>
+                Confidence:
+                <span id="confidence"></span>
+            </p>
+
+        </div>
+
+        <div class="footer">
+            Experiment 8 - Naive Bayes Classifier
+        </div>
+
+    </div>
+
+    <script>
+
+        async function classifyMessage() {
+
+            const message =
+                document.getElementById("message").value.trim();
+
+            if (message === "") {
+                alert("Please enter a message.");
+                return;
+            }
+
+            const formData = new FormData();
+
+            formData.append("message", message);
+
+            const response = await fetch("/predict", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+
+                document.getElementById("prediction").innerText =
+                    data.prediction;
+
+                document.getElementById("resultMessage").innerText =
+                    data.result_message;
+
+                document.getElementById("confidence").innerText =
+                    data.confidence + "%";
+
+                document.getElementById("result").style.display =
+                    "block";
+            }
+        }
+
+        function clearMessage() {
+
+            document.getElementById("message").value = "";
+
+            document.getElementById("result").style.display =
+                "none";
+        }
+
+    </script>
+
+</body>
+</html>

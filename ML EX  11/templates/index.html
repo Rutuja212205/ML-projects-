@@ -1,0 +1,482 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Random Forest ML Project</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f6fa;
+            color: #243047;
+        }
+
+        header {
+            background: #172c4d;
+            color: white;
+            padding: 25px 15px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0 0 10px;
+            font-size: 30px;
+        }
+
+        header p {
+            margin: 0;
+            color: #d6e2f2;
+            line-height: 1.6;
+        }
+
+        nav {
+            background: #ffffff;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        nav a {
+            color: #172c4d;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 18px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            border: 1px solid #e0e6ee;
+        }
+
+        h2 {
+            color: #172c4d;
+            margin-top: 0;
+        }
+
+        .description {
+            color: #647187;
+            line-height: 1.7;
+        }
+
+        .models {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .model {
+            flex: 1;
+            min-width: 220px;
+            background: #f5f8fc;
+            padding: 18px;
+            border-radius: 8px;
+            border-left: 4px solid #2878b5;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .tabs button {
+            flex: 1;
+            padding: 12px;
+            background: #e9eef5;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .tabs button.active {
+            background: #172c4d;
+            color: white;
+        }
+
+        .form-panel {
+            display: none;
+        }
+
+        .form-panel.active {
+            display: block;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .submit {
+            width: 100%;
+            margin-top: 22px;
+            padding: 13px;
+            background: #176b50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .submit:hover {
+            background: #10543e;
+        }
+
+        .result {
+            background: #e8f7ef;
+            border: 1px solid #b8e5cc;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            color: #176b50;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 13px;
+            text-align: center;
+            border: 1px solid #e0e6ee;
+        }
+
+        th {
+            background: #172c4d;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f5f8fc;
+        }
+
+        footer {
+            background: #172c4d;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 35px;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 23px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav a {
+                display: inline-block;
+                margin: 7px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Random Forest Algorithm</h1>
+    <p>Machine Learning Project | Classification & Regression</p>
+    <p>Decision Tree vs Random Forest</p>
+</header>
+
+<nav>
+    <a href="#about">About</a>
+    <a href="#prediction">Prediction</a>
+    <a href="#comparison">Comparison</a>
+</nav>
+
+<div class="container">
+
+    <section class="card" id="about">
+        <h2>Project Overview</h2>
+
+        <p class="description">
+            This project implements and compares Decision Tree and
+            Random Forest algorithms for classification and regression.
+            It includes data preprocessing, model training, evaluation,
+            and interactive predictions using machine learning.
+        </p>
+
+        <div class="models">
+            <div class="model">
+                <h3>Decision Tree</h3>
+                <p class="description">
+                    A single tree that predicts outcomes using
+                    decision rules based on input features.
+                </p>
+            </div>
+
+            <div class="model">
+                <h3>Random Forest</h3>
+                <p class="description">
+                    An ensemble of decision trees that combines
+                    multiple predictions to improve generalization.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="card" id="prediction">
+        <h2>Prediction System</h2>
+
+        <p class="description">
+            Enter the required feature values and select an algorithm
+            to generate a prediction.
+        </p>
+
+        <div class="tabs">
+            <button type="button" class="active"
+                onclick="showTab('classification', this)">
+                Classification
+            </button>
+
+            <button type="button"
+                onclick="showTab('regression', this)">
+                Regression
+            </button>
+        </div>
+
+        <!-- Classification Form -->
+        <div class="form-panel active" id="classification">
+
+            <h3>Classification Prediction</h3>
+
+            <form action="/predict_classification" method="POST">
+
+                <div class="form-grid">
+                    <div>
+                        <label for="c1">Feature 1</label>
+                        <input id="c1" type="number" step="any"
+                            name="feature1" required>
+                    </div>
+
+                    <div>
+                        <label for="c2">Feature 2</label>
+                        <input id="c2" type="number" step="any"
+                            name="feature2" required>
+                    </div>
+
+                    <div>
+                        <label for="c3">Feature 3</label>
+                        <input id="c3" type="number" step="any"
+                            name="feature3" required>
+                    </div>
+
+                    <div>
+                        <label for="cm">Select Model</label>
+                        <select id="cm" name="model">
+                            <option value="random_forest">
+                                Random Forest
+                            </option>
+                            <option value="decision_tree">
+                                Decision Tree
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="submit" type="submit">
+                    Predict Classification
+                </button>
+            </form>
+
+            {% if classification_result %}
+                <div class="result">
+                    <strong>Result:</strong>
+                    {{ classification_result }}
+                </div>
+            {% endif %}
+
+        </div>
+
+        <!-- Regression Form -->
+        <div class="form-panel" id="regression">
+
+            <h3>Regression Prediction</h3>
+
+            <form action="/predict_regression" method="POST">
+
+                <div class="form-grid">
+                    <div>
+                        <label for="r1">Feature 1</label>
+                        <input id="r1" type="number" step="any"
+                            name="feature1" required>
+                    </div>
+
+                    <div>
+                        <label for="r2">Feature 2</label>
+                        <input id="r2" type="number" step="any"
+                            name="feature2" required>
+                    </div>
+
+                    <div>
+                        <label for="r3">Feature 3</label>
+                        <input id="r3" type="number" step="any"
+                            name="feature3" required>
+                    </div>
+
+                    <div>
+                        <label for="rm">Select Model</label>
+                        <select id="rm" name="model">
+                            <option value="random_forest">
+                                Random Forest
+                            </option>
+                            <option value="decision_tree">
+                                Decision Tree
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="submit" type="submit">
+                    Predict Numerical Value
+                </button>
+            </form>
+
+            {% if regression_result %}
+                <div class="result">
+                    <strong>Result:</strong>
+                    {{ regression_result }}
+                </div>
+            {% endif %}
+
+        </div>
+    </section>
+
+    <section class="card" id="comparison">
+        <h2>Model Performance Comparison</h2>
+
+        <h3>Classification Metrics</h3>
+
+        <div class="table-wrapper">
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Decision Tree</th>
+                    <th>Random Forest</th>
+                </tr>
+                <tr>
+                    <td>Accuracy</td>
+                    <td>{{ dt_class_accuracy | default('—') }}</td>
+                    <td>{{ rf_class_accuracy | default('—') }}</td>
+                </tr>
+                <tr>
+                    <td>Precision</td>
+                    <td>{{ dt_precision | default('—') }}</td>
+                    <td>{{ rf_precision | default('—') }}</td>
+                </tr>
+                <tr>
+                    <td>Recall</td>
+                    <td>{{ dt_recall | default('—') }}</td>
+                    <td>{{ rf_recall | default('—') }}</td>
+                </tr>
+                <tr>
+                    <td>F1-Score</td>
+                    <td>{{ dt_f1 | default('—') }}</td>
+                    <td>{{ rf_f1 | default('—') }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <h3>Regression Metrics</h3>
+
+        <div class="table-wrapper">
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Decision Tree</th>
+                    <th>Random Forest</th>
+                </tr>
+                <tr>
+                    <td>MAE</td>
+                    <td>{{ dt_mae | default('—') }}</td>
+                    <td>{{ rf_mae | default('—') }}</td>
+                </tr>
+                <tr>
+                    <td>RMSE</td>
+                    <td>{{ dt_rmse | default('—') }}</td>
+                    <td>{{ rf_rmse | default('—') }}</td>
+                </tr>
+                <tr>
+                    <td>R² Score</td>
+                    <td>{{ dt_r2 | default('—') }}</td>
+                    <td>{{ rf_r2 | default('—') }}</td>
+                </tr>
+            </table>
+        </div>
+    </section>
+
+</div>
+
+<footer>
+    <strong>Random Forest Machine Learning Project</strong>
+    <br>
+    Classification | Regression | Model Evaluation
+</footer>
+
+<script>
+    function showTab(tabId, button) {
+        document.querySelectorAll('.form-panel').forEach(panel => {
+            panel.classList.remove('active');
+        });
+
+        document.querySelectorAll('.tabs button').forEach(tab => {
+            tab.classList.remove('active');
+        });
+
+        document.getElementById(tabId).classList.add('active');
+        button.classList.add('active');
+    }
+</script>
+
+</body>
+</html>

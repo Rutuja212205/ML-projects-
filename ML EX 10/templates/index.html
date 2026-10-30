@@ -1,0 +1,462 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Non-Linear SVM | Classification Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: #101b35;
+            padding: 18px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand {
+            color: white;
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .brand span {
+            color: #69a5ff;
+        }
+
+        .nav-label {
+            color: #cbd5e1;
+            font-size: 13px;
+        }
+
+        /* Hero section */
+        .hero {
+            background: linear-gradient(120deg, #101b35, #233f73);
+            color: white;
+            padding: 45px 20px 75px;
+            text-align: center;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 7px 13px;
+            border: 1px solid #5878ac;
+            border-radius: 30px;
+            color: #dbeafe;
+            font-size: 12px;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            font-size: clamp(27px, 4vw, 39px);
+            margin-bottom: 14px;
+        }
+
+        .hero p {
+            color: #d4dfef;
+            font-size: 15px;
+            line-height: 1.8;
+            max-width: 650px;
+            margin: auto;
+        }
+
+        /* Main container */
+        .container {
+            width: min(900px, 92%);
+            margin: -38px auto 40px;
+            position: relative;
+        }
+
+        .card {
+            background: white;
+            padding: 32px;
+            border: 1px solid #e5eaf2;
+            border-radius: 15px;
+            box-shadow: 0 12px 35px rgba(23, 32, 51, 0.09);
+        }
+
+        .section-heading {
+            font-size: 23px;
+            margin-bottom: 8px;
+        }
+
+        .section-description {
+            color: #6b778c;
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 28px;
+        }
+
+        /* Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 9px;
+        }
+
+        .field-description {
+            display: block;
+            color: #8792a5;
+            font-size: 12px;
+            font-weight: 400;
+            margin-top: 4px;
+        }
+
+        input, select {
+            width: 100%;
+            height: 48px;
+            border: 1px solid #d8e0ec;
+            background: #fbfcfe;
+            border-radius: 8px;
+            padding: 0 13px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #172033;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3979ed;
+            box-shadow: 0 0 0 3px #e5efff;
+            background: white;
+        }
+
+        .kernel-section {
+            margin-top: 25px;
+        }
+
+        .kernel-section label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 9px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            min-height: 50px;
+            margin-top: 28px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        /* Prediction output */
+        .result {
+            margin-top: 28px;
+            padding: 23px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+        }
+
+        .result h3 {
+            font-size: 20px;
+            margin-bottom: 9px;
+        }
+
+        .result p {
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .class-zero {
+            background: #ecfdf3;
+            border-color: #b7ebcc;
+            color: #166534;
+        }
+
+        .class-one {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1e40af;
+        }
+
+        .error {
+            background: #fff1f2;
+            border-color: #fecdd3;
+            color: #9f1239;
+        }
+
+        .result-label {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 10px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Information section */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 15px;
+            margin-top: 24px;
+        }
+
+        .info-item {
+            background: #f8fafc;
+            border: 1px solid #e8edf5;
+            border-radius: 9px;
+            padding: 18px;
+        }
+
+        .info-item h3 {
+            font-size: 14px;
+            margin-bottom: 7px;
+        }
+
+        .info-item p {
+            font-size: 12px;
+            line-height: 1.7;
+            color: #68758b;
+        }
+
+        .notice {
+            margin-top: 22px;
+            padding: 14px 16px;
+            background: #f8fafc;
+            border-left: 3px solid #7c9ee8;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px 15px;
+            color: #7a8699;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 16px 5%;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .hero {
+                padding: 35px 18px 65px;
+            }
+
+            .card {
+                padding: 23px 18px;
+            }
+
+            .form-grid, .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="brand">ML<span>Lab.</span></div>
+        <div class="nav-label">Machine Learning Classification System</div>
+    </nav>
+
+    <section class="hero">
+        <div class="tag">SUPPORT VECTOR MACHINE</div>
+        <h1>Non-Linear SVM Classifier</h1>
+        <p>
+            Analyze two-dimensional data using advanced kernel-based
+            classification. Compare RBF and Polynomial SVM models
+            through an interactive prediction interface.
+        </p>
+    </section>
+
+    <main class="container">
+
+        <section class="card">
+            <h2 class="section-heading">Classification Panel</h2>
+
+            <p class="section-description">
+                Enter the numerical features of a sample and select
+                the kernel function to generate a machine-learning
+                classification result.
+            </p>
+
+            <form action="/predict" method="POST">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="feature1">
+                            Feature 1
+                            <span class="field-description">
+                                First numerical input
+                            </span>
+                        </label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            id="feature1"
+                            name="feature1"
+                            placeholder="e.g. 0.50"
+                            value="{{ feature1 if feature1 is defined else '' }}"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="feature2">
+                            Feature 2
+                            <span class="field-description">
+                                Second numerical input
+                            </span>
+                        </label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            id="feature2"
+                            name="feature2"
+                            placeholder="e.g. 0.50"
+                            value="{{ feature2 if feature2 is defined else '' }}"
+                            required>
+                    </div>
+
+                </div>
+
+                <div class="kernel-section">
+                    <label for="kernel">Kernel Function</label>
+
+                    <select id="kernel" name="kernel">
+                        <option
+                            value="rbf"
+                            {% if selected_kernel is not defined or selected_kernel == 'rbf' %}
+                            selected
+                            {% endif %}>
+                            Radial Basis Function (RBF)
+                        </option>
+
+                        <option
+                            value="poly"
+                            {% if selected_kernel is defined and selected_kernel == 'poly' %}
+                            selected
+                            {% endif %}>
+                            Polynomial Kernel (Degree 3)
+                        </option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    Run Classification &rarr;
+                </button>
+
+            </form>
+
+            {% if result %}
+            <div class="result {{ status }}">
+                <h3>Prediction Result: {{ result }}</h3>
+
+                <p>
+                    <strong>Selected model:</strong> {{ model_name }}
+                </p>
+
+                <p>
+                    <strong>Feature 1:</strong> {{ feature1 }}
+                    <br>
+                    <strong>Feature 2:</strong> {{ feature2 }}
+                </p>
+
+                <span class="result-label">
+                    Classification completed
+                </span>
+            </div>
+            {% endif %}
+
+            {% if error %}
+            <div class="result error">
+                <h3>Input Error</h3>
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <h3>RBF Kernel</h3>
+                    <p>
+                        Learns flexible, curved decision boundaries
+                        based on similarities between samples.
+                    </p>
+                </div>
+
+                <div class="info-item">
+                    <h3>Polynomial Kernel</h3>
+                    <p>
+                        Models non-linear relationships using
+                        polynomial combinations of features.
+                    </p>
+                </div>
+
+                <div class="info-item">
+                    <h3>Model Evaluation</h3>
+                    <p>
+                        Accuracy, precision, recall, F1-score and
+                        confusion matrix are available in training output.
+                    </p>
+                </div>
+            </div>
+
+            <div class="notice">
+                <strong>Dataset information:</strong>
+                This project uses the synthetic make_moons dataset
+                from Scikit-learn. Class 0 and Class 1 are generated
+                categories, not real-world labels. This interface
+                predicts the class of an individual input sample.
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        Non-Linear Support Vector Machine (SVM)<br>
+        Developed using Python, Flask and Scikit-learn
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,1219 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ML Arena | Model Comparison Workspace</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f6fb;
+            color: #172033;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 250px;
+            background: #111827;
+            color: white;
+            padding: 30px 20px;
+            position: fixed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            margin-bottom: 50px;
+        }
+
+        .brand-mark {
+            background: #6366f1;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .brand-text strong {
+            display: block;
+            font-size: 20px;
+        }
+
+        .brand-text small {
+            color: #9ca3af;
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+
+        .nav-section {
+            margin-bottom: 35px;
+        }
+
+        .nav-label {
+            color: #818da3;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 13px 12px;
+            color: #cbd5e1;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #263249;
+            color: white;
+        }
+
+        .nav-symbol {
+            color: #818cf8;
+            margin-right: 12px;
+            font-size: 12px;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            border-top: 1px solid #374151;
+            padding-top: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .status-dot {
+            height: 10px;
+            width: 10px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        .sidebar-bottom p {
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .sidebar-bottom small {
+            color: #9ca3af;
+        }
+
+        /* MAIN CONTENT */
+
+        .main-content {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 30px 45px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+
+        .breadcrumbs {
+            font-size: 12px;
+            font-weight: bold;
+            color: #64748b;
+            letter-spacing: 1px;
+        }
+
+        .breadcrumbs span {
+            margin: 0 10px;
+            color: #a5b4fc;
+        }
+
+        .topbar-label {
+            background: #e0e7ff;
+            color: #4338ca;
+            padding: 9px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* PAGE HEADING */
+
+        .page-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .section-kicker {
+            color: #6366f1;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .page-heading h1 {
+            font-size: 42px;
+            line-height: 1.2;
+            margin-bottom: 15px;
+            color: #111827;
+        }
+
+        .page-heading h1 span {
+            color: #6366f1;
+        }
+
+        .page-description {
+            color: #64748b;
+            font-size: 15px;
+            max-width: 620px;
+            line-height: 1.7;
+        }
+
+        .button-primary {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 14px 22px;
+            border-radius: 9px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-block;
+            transition: 0.3s;
+        }
+
+        .button-primary:hover {
+            background: #3730a3;
+            transform: translateY(-2px);
+        }
+
+        /* OVERVIEW CARDS */
+
+        .overview-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .overview-item {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+
+        .overview-item > p {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 17px;
+        }
+
+        .overview-value strong {
+            display: block;
+            font-size: 32px;
+            color: #4f46e5;
+            margin-bottom: 5px;
+        }
+
+        .overview-value span {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* SECTIONS */
+
+        .content-section {
+            margin-bottom: 55px;
+            scroll-margin-top: 25px;
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .section-heading h2 {
+            font-size: 25px;
+            color: #111827;
+        }
+
+        .section-caption {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* WORKSPACE */
+
+        .workspace-panel {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+        }
+
+        .panel-intro {
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 22px;
+            margin-bottom: 25px;
+        }
+
+        .panel-intro h3 {
+            font-size: 19px;
+            margin-bottom: 8px;
+        }
+
+        .panel-intro p {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .battle-form {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #334155;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #dbe1ea;
+            border-radius: 8px;
+            background: #f8fafc;
+            font-size: 14px;
+            color: #334155;
+            outline: none;
+        }
+
+        .form-group select:focus {
+            border-color: #6366f1;
+        }
+
+        .form-group small {
+            display: block;
+            color: #94a3b8;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .field-description {
+            color: #64748b;
+            font-size: 12px;
+            margin-bottom: 14px;
+        }
+
+        .algorithm-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .selection-placeholder {
+            color: #94a3b8;
+            font-size: 13px;
+            padding: 12px;
+        }
+
+        .algorithm-selection {
+            grid-column: 1 / -1;
+        }
+
+        /* PARAMETERS */
+
+        .parameter-section {
+            grid-column: 1 / -1;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .parameter-section-heading {
+            margin-bottom: 12px;
+        }
+
+        .parameter-section-heading h3 {
+            font-size: 18px;
+        }
+
+        .parameter-help {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .parameter-options {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .parameter-options input,
+        .parameter-options select {
+            max-width: 100%;
+        }
+
+        /* ACTIONS */
+
+        .form-actions {
+            grid-column: 1 / -1;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .form-actions p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* EXPERIMENT TABLE */
+
+        .table-container {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 13px;
+            overflow-x: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-align: left;
+            padding: 17px 20px;
+        }
+
+        td {
+            padding: 17px 20px;
+            border-top: 1px solid #edf0f5;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        td:nth-child(2) {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .task-label {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .regression-label {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .classification-label {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .probabilistic-label {
+            background: #f3e8ff;
+            color: #7e22ce;
+        }
+
+        .clustering-label {
+            background: #ffedd5;
+            color: #c2410c;
+        }
+
+        /* RESULTS */
+
+        .empty-state {
+            background: white;
+            border: 1px dashed #cbd5e1;
+            border-radius: 14px;
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .empty-state-number {
+            font-size: 40px;
+            color: #c7d2fe;
+            font-weight: bold;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 8px;
+            font-size: 17px;
+        }
+
+        .empty-state p {
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* HISTORY */
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-empty {
+            background: white;
+            padding: 28px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+        }
+
+        .history-empty h3 {
+            font-size: 16px;
+            margin-bottom: 7px;
+        }
+
+        .history-empty p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* FOOTER */
+
+        .page-footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 25px;
+            color: #94a3b8;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1000px) {
+            .sidebar {
+                width: 210px;
+            }
+
+            .main-content {
+                margin-left: 210px;
+                width: calc(100% - 210px);
+                padding: 25px;
+            }
+
+            .page-heading h1 {
+                font-size: 34px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                padding: 18px;
+            }
+
+            .app-layout {
+                display: block;
+            }
+
+            .brand {
+                margin-bottom: 20px;
+            }
+
+            .nav-section {
+                margin-bottom: 10px;
+            }
+
+            .sidebar-bottom {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+
+            .topbar {
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .page-heading {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .overview-strip {
+                grid-template-columns: 1fr;
+            }
+
+            .battle-form {
+                grid-template-columns: 1fr;
+            }
+
+            .algorithm-selection,
+            .parameter-section,
+            .form-actions {
+                grid-column: 1;
+            }
+
+            .parameter-options {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .empty-state {
+                padding: 25px;
+            }
+
+            .page-footer {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <a href="/" class="brand">
+            <span class="brand-mark">M.</span>
+
+            <span class="brand-text">
+                <strong>ML Arena</strong>
+                <small>MODEL LABORATORY</small>
+            </span>
+        </a>
+
+        <div class="nav-section">
+            <p class="nav-label">WORKSPACE</p>
+
+            <a href="#workspace" class="nav-link active">
+                <span class="nav-symbol">01</span> Overview
+            </a>
+
+            <a href="#new-battle" class="nav-link">
+                <span class="nav-symbol">02</span> New comparison
+            </a>
+
+            <a href="#results" class="nav-link">
+                <span class="nav-symbol">03</span> Battle results
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <p class="nav-label">RESOURCES</p>
+
+            <a href="#experiments" class="nav-link">
+                <span class="nav-symbol">04</span> Experiment library
+            </a>
+
+            <a href="#new-battle" class="nav-link">
+                <span class="nav-symbol">05</span> Datasets
+            </a>
+
+            <a href="#history" class="nav-link">
+                <span class="nav-symbol">06</span> Saved comparisons
+            </a>
+        </div>
+
+        <div class="sidebar-bottom">
+            <span class="status-dot"></span>
+
+            <div>
+                <p>LOCAL ENVIRONMENT</p>
+                <small>Development workspace</small>
+            </div>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div class="breadcrumbs">
+                WORKSPACE <span>/</span> OVERVIEW
+            </div>
+
+            <div class="topbar-label">
+                TY AIML <span>·</span> ML LAB PROJECT
+            </div>
+
+        </header>
+
+
+        <!-- PAGE HEADING -->
+
+        <section class="page-heading" id="workspace">
+
+            <div>
+                <p class="section-kicker">
+                    YOUR MACHINE LEARNING WORKSPACE
+                </p>
+
+                <h1>
+                    Model comparison<br>
+                    workspace<span>.</span>
+                </h1>
+
+                <p class="page-description">
+                    Run algorithms on the same dataset, compare their
+                    performance, and understand where each model works best.
+                </p>
+            </div>
+
+            <a href="#new-battle" class="button-primary">
+                + New comparison
+            </a>
+
+        </section>
+
+
+        <!-- OVERVIEW -->
+
+        <section class="overview-strip">
+
+            <div class="overview-item">
+                <p>LAB EXPERIMENTS</p>
+
+                <div class="overview-value">
+                    <strong>11</strong>
+                    <span>From your lab manual</span>
+                </div>
+            </div>
+
+            <div class="overview-item">
+                <p>LEARNING TASKS</p>
+
+                <div class="overview-value">
+                    <strong>03</strong>
+                    <span>Regression, classification, clustering</span>
+                </div>
+            </div>
+
+            <div class="overview-item">
+                <p>BATTLES THIS SESSION</p>
+
+                <div class="overview-value">
+                    <strong id="comparison-count">00</strong>
+                    <span>Completed comparisons</span>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- COMPARISON WORKSPACE -->
+
+        <section class="content-section" id="new-battle">
+
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">01 / CONFIGURATION</p>
+                    <h2>Set up a comparison</h2>
+                </div>
+
+                <span class="section-caption">BATTLE WORKSPACE</span>
+            </div>
+
+            <div class="workspace-panel">
+
+                <div class="panel-intro">
+                    <h3>Define your experiment</h3>
+
+                    <p>
+                        Select a learning task, dataset, competing algorithms,
+                        and individual model parameters.
+                    </p>
+                </div>
+
+
+                <form id="battle-form" class="battle-form">
+
+                    <!-- LEARNING TASK -->
+
+                    <div class="form-group">
+
+                        <label for="task-type">Learning task</label>
+
+                        <select id="task-type"
+                                name="task_type"
+                                required>
+
+                            <option value="">Select a task</option>
+
+                            <option value="classification">
+                                Classification
+                            </option>
+
+                            <option value="regression">
+                                Regression
+                            </option>
+
+                            <option value="clustering">
+                                Clustering
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- DATASET -->
+
+                    <div class="form-group">
+
+                        <label for="dataset">Dataset</label>
+
+                        <select id="dataset"
+                                name="dataset"
+                                required
+                                disabled>
+
+                            <option value="">
+                                Select a learning task first
+                            </option>
+
+                        </select>
+
+                        <small id="dataset-description">
+                            Available datasets will load automatically.
+                        </small>
+
+                    </div>
+
+
+                    <!-- TEST SPLIT -->
+
+                    <div class="form-group">
+
+                        <label for="test-size">
+                            Test data proportion
+                        </label>
+
+                        <select id="test-size" name="test_size">
+
+                            <option value="0.2">20%</option>
+                            <option value="0.25">25%</option>
+                            <option value="0.3">30%</option>
+
+                        </select>
+
+                        <small>
+                            Used for classification and regression.
+                        </small>
+
+                    </div>
+
+
+                    <!-- ALGORITHMS -->
+
+                    <div class="form-group algorithm-selection">
+
+                        <label>Competing algorithms</label>
+
+                        <p class="field-description">
+                            Select at least two algorithms to compare.
+                        </p>
+
+                        <div id="algorithm-options"
+                             class="algorithm-options">
+
+                            <p class="selection-placeholder">
+                                Select a learning task to load algorithms.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DYNAMIC PARAMETERS -->
+
+                    <section class="parameter-section"
+                             id="parameter-section"
+                             aria-live="polite">
+
+                        <div class="parameter-section-heading">
+
+                            <div>
+                                <p class="section-kicker">
+                                    MODEL CONFIGURATION
+                                </p>
+
+                                <h3>Algorithm parameters</h3>
+                            </div>
+
+                        </div>
+
+                        <p class="parameter-help">
+                            Select an algorithm above to configure its parameters.
+                            Different algorithms have different settings.
+                        </p>
+
+                        <div id="parameter-options"
+                             class="parameter-options">
+
+                            <p class="selection-placeholder">
+                                Parameter controls will appear here.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- ACTIONS -->
+
+                    <div class="form-actions">
+
+                        <p id="battle-message"
+                           role="status"
+                           aria-live="polite">
+
+                            Configure your experiment before starting.
+                        </p>
+
+                        <button type="submit"
+                                class="button-primary"
+                                id="configure-battle">
+
+                            Run battle →
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+
+        <!-- EXPERIMENT LIBRARY -->
+
+        <section class="content-section" id="experiments">
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="section-kicker">02 / YOUR LAB MANUAL</p>
+                    <h2>Experiment library</h2>
+                </div>
+
+                <span class="section-caption">11 EXPERIMENTS</span>
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>NO.</th>
+                            <th>EXPERIMENT</th>
+                            <th>TASK TYPE</th>
+                            <th>IMPLEMENTATION</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>01</td>
+                            <td>Simple Linear Regression</td>
+                            <td>
+                                <span class="task-label regression-label">
+                                    Regression
+                                </span>
+                            </td>
+                            <td>Implemented in registry</td>
+                        </tr>
+
+                        <tr>
+                            <td>02</td>
+                            <td>Multivariate Linear Regression</td>
+                            <td>
+                                <span class="task-label regression-label">
+                                    Regression
+                                </span>
+                            </td>
+                            <td>Implemented in registry</td>
+                        </tr>
+
+                        <tr>
+                            <td>03</td>
+                            <td>Logistic Regression</td>
+                            <td>
+                                <span class="task-label classification-label">
+                                    Classification
+                                </span>
+                            </td>
+                            <td>Implemented</td>
+                        </tr>
+
+                        <tr>
+                            <td>04</td>
+                            <td>Multiclass Classification</td>
+                            <td>
+                                <span class="task-label classification-label">
+                                    Classification
+                                </span>
+                            </td>
+                            <td>Supported by classifiers</td>
+                        </tr>
+
+                        <tr>
+                            <td>05</td>
+                            <td>K-Nearest Neighbors (KNN)</td>
+                            <td>
+                                <span class="task-label classification-label">
+                                    Classification
+                                </span>
+                            </td>
+                            <td>Implemented</td>
+                        </tr>
+
+                        <tr>
+                            <td>06</td>
+                            <td>Naive Bayes Classifier</td>
+                            <td>
+                                <span class="task-label classification-label">
+                                    Classification
+                                </span>
+                            </td>
+                            <td>Implemented</td>
+                        </tr>
+
+                        <tr>
+                            <td>07</td>
+                            <td>Bayesian Network</td>
+                            <td>
+                                <span class="task-label probabilistic-label">
+                                    Probabilistic
+                                </span>
+                            </td>
+                            <td>Educational implementation</td>
+                        </tr>
+
+                        <tr>
+                            <td>08</td>
+                            <td>Decision Tree</td>
+                            <td>
+                                <span class="task-label classification-label">
+                                    Classification
+                                </span>
+                            </td>
+                            <td>Implemented</td>
+                        </tr>
+
+                        <tr>
+                            <td>09</td>
+                            <td>Support Vector Machine (SVM)</td>
+                            <td>
+                                <span class="task-label classification-label">
+                                    Classification
+                                </span>
+                            </td>
+                            <td>Implemented</td>
+                        </tr>
+
+                        <tr>
+                            <td>10</td>
+                            <td>K-Means Clustering</td>
+                            <td>
+                                <span class="task-label clustering-label">
+                                    Clustering
+                                </span>
+                            </td>
+                            <td>Implemented</td>
+                        </tr>
+
+                        <tr>
+                            <td>11</td>
+                            <td>Agglomerative Clustering</td>
+                            <td>
+                                <span class="task-label clustering-label">
+                                    Clustering
+                                </span>
+                            </td>
+                            <td>Implemented</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- RESULTS -->
+
+        <section class="content-section" id="results">
+
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">03 / RESULTS</p>
+                    <h2>Battle results</h2>
+                </div>
+            </div>
+
+            <div class="empty-state" id="battle-results">
+
+                <span class="empty-state-number">—</span>
+
+                <div>
+                    <h3>No comparison selected</h3>
+
+                    <p>
+                        Run a battle or reopen a saved comparison to
+                        inspect its metrics and results.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SAVED HISTORY -->
+
+        <section class="content-section" id="history">
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="section-kicker">04 / SAVED EXPERIMENTS</p>
+                    <h2>Recent comparisons</h2>
+                </div>
+
+                <span class="section-caption">LATEST 10 BATTLES</span>
+
+            </div>
+
+            <div id="recent-history"
+                 class="history-list"
+                 aria-live="polite">
+
+                <div class="history-empty">
+                    <h3>Loading saved comparisons...</h3>
+                    <p>Your saved battles will appear here.</p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <footer class="page-footer">
+            <span>ML ALGORITHM BATTLE ARENA</span>
+            <span>Built for machine learning experimentation</span>
+        </footer>
+
+    </main>
+
+</div>
+
+</body>
+</html>

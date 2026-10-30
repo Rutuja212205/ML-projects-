@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Diabetes Prediction - KNN</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f2f6ff;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1f4e79;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 7px;
+            color: #333;
+        }
+
+        input {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1f4e79;
+        }
+
+        .button-box {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        button {
+            padding: 13px 35px;
+            background: #1f4e79;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #163a5c;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 18px;
+            text-align: center;
+            background: #e8f4ff;
+            border-radius: 10px;
+            color: #1f4e79;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 650px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🩺 Diabetes Prediction</h1>
+
+    <p class="subtitle">
+        K-Nearest Neighbors (KNN) Classification Model
+    </p>
+
+    <form action="/predict" method="POST">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Pregnancies</label>
+                <input type="number" name="Pregnancies" step="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Glucose</label>
+                <input type="number" name="Glucose" step="any" required>
+            </div>
+
+            <div class="form-group">
+                <label>Blood Pressure</label>
+                <input type="number" name="BloodPressure" step="any" required>
+            </div>
+
+            <div class="form-group">
+                <label>Skin Thickness</label>
+                <input type="number" name="SkinThickness" step="any" required>
+            </div>
+
+            <div class="form-group">
+                <label>Insulin</label>
+                <input type="number" name="Insulin" step="any" required>
+            </div>
+
+            <div class="form-group">
+                <label>BMI</label>
+                <input type="number" name="BMI" step="any" required>
+            </div>
+
+            <div class="form-group">
+                <label>Diabetes Pedigree Function</label>
+                <input type="number" name="DiabetesPedigreeFunction" step="any" required>
+            </div>
+
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" name="Age" step="1" required>
+            </div>
+
+        </div>
+
+        <div class="button-box">
+            <button type="submit">Predict Diabetes</button>
+        </div>
+
+    </form>
+
+    {% if prediction %}
+        <div class="result">
+            {{ prediction }}
+        </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>
